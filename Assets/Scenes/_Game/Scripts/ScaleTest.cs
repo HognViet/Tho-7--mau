@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class ScaleTest : MonoBehaviour
 {
-    [SerializeField] private Transform parentTransform;
+
+    private int index = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -12,15 +13,22 @@ public class ScaleTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (index > this.transform.parent.childCount - 1)
         {
-            this.transform.SetParent(parentTransform);
+            index = this.transform.parent.childCount - 1;
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+        if ( index < 0 )
         {
-            this.transform.SetParent(null);
-            this.transform.localScale = parentTransform.transform.localScale;
+            index = 0;
         }
-        
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            index++;
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            index--;
+        }
+        this.transform.SetSiblingIndex(index);
     }
 }

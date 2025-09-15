@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moverment_Speed = 3.5f;
     private Vector3 moverment = Vector3.zero;
+    private Vector3 flipRight = new Vector3(1, 1, 1);
+    private Vector3 flipLeft = new Vector3(-1, 1, 1);
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -16,6 +18,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         Moverment();
+        Flip();
     }
     void Moverment()
     {
@@ -30,4 +33,16 @@ public class PlayerController : MonoBehaviour
         }
         this.transform.Translate(moverment * Time.deltaTime);
     }
+    void Flip()
+    {
+        if(moverment.x > 0)
+        {
+            this.transform.localScale = flipRight;
+        }
+        else if(moverment.x < 0)
+        {
+            this.transform.localScale = flipLeft;
+        }
+    }
+    
 }
