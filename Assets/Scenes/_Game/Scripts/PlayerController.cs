@@ -8,10 +8,15 @@ public class PlayerController : MonoBehaviour
     private Vector3 moverment = Vector3.zero;
     private Vector3 flipRight = new Vector3(1, 1, 1);
     private Vector3 flipLeft = new Vector3(-1, 1, 1);
+
+    [SerializeField] private Camera playerCamera;
+    private Vector3 cameraOffset = new Vector3(0, 0, -10);
+
+    private Rigidbody2D rb;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        rb = this.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -22,19 +27,35 @@ public class PlayerController : MonoBehaviour
     }
     void Moverment()
     {
-        // di chuyen 
-        if(Input.GetKey(KeyCode.A))
+        // di chuyen can thiep toa do
+        //
+        //if (Input.GetKey(KeyCode.A))
+        //{
+        //    moverment.x = -moverment_Speed;
+        //}
+        //if(Input.GetKey(KeyCode.D))
+        //{
+        //    moverment.x = moverment_Speed;
+        //}
+        //this.transform.Translate(moverment * Time.deltaTime);
+        // di chuyen camera
+        playerCamera.transform.position = this.transform.position + cameraOffset;
+        // di chuyen can thiep physics
+        if (Input.GetKey(KeyCode.D))
         {
-            moverment.x = -moverment_Speed;
+            rb.linearVelocity = new Vector2(moverment_Speed, 0);
+            moverment.x = 1;
         }
-        if(Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.A))
         {
-            moverment.x = moverment_Speed;
+            rb.linearVelocity = new Vector2(-moverment_Speed, 0);
+            moverment.x = -1;
         }
-        this.transform.Translate(moverment * Time.deltaTime);
+        else rb.linearVelocity = new Vector2(0, 0);
     }
     void Flip()
     {
+        
         if(moverment.x > 0)
         {
             this.transform.localScale = flipRight;
