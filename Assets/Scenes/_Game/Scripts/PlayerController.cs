@@ -2,68 +2,69 @@ using NUnit.Framework;
 using UnityEngine;
 using System.Collections.Generic;
 
+
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moverment_Speed = 3.5f;
-    private Vector3 moverment = Vector3.zero;
+    [SerializeField] private float movementSpeed = 4.5f;
+    [SerializeField] private float jumpForce = 5f;
+
+    private Vector2 movementInput;
+   [SerializeField] private bool isJump = false;
+    [SerializeField]private bool isGround = false;
+
+    private Rigidbody2D rb;
+
     private Vector3 flipRight = new Vector3(1, 1, 1);
     private Vector3 flipLeft = new Vector3(-1, 1, 1);
 
-    [SerializeField] private Camera playerCamera;
-    private Vector3 cameraOffset = new Vector3(0, 0, -10);
+    private Camera playerCamera;
+    [SerializeField] private Vector3 cameraOffset = new Vector3(0, 0, -10);
 
-    private Rigidbody2D rb;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        rb = this.GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
+        playerCamera = Camera.main;
+        rb.freezeRotation = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        Moverment();
+
+        movementInput.x = Input.GetAxisRaw("Horizontal");
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            isJump = true;
+        }
+
         Flip();
+
+        playerCamera.transform.position = transform.position + cameraOffset;
     }
-    void Moverment()
+
+    private void FixedUpdate()
     {
-        // di chuyen can thiep toa do
-        //
-        //if (Input.GetKey(KeyCode.A))
-        //{
-        //    moverment.x = -moverment_Speed;
-        //}
-        //if(Input.GetKey(KeyCode.D))
-        //{
-        //    moverment.x = moverment_Speed;
-        //}
-        //this.transform.Translate(moverment * Time.deltaTime);
-        // di chuyen camera
-        playerCamera.transform.position = this.transform.position + cameraOffset;
-        // di chuyen can thiep physics
-        if (Input.GetKey(KeyCode.D))
+        rb.linearVelocityX = movementInput.x * movementSpeed;
+
+        if (isJump && isGround)
         {
-            rb.linearVelocity = new Vector2(moverment_Speed, 0);
-            moverment.x = 1;
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            isJump = false;
         }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            rb.linearVelocity = new Vector2(-moverment_Speed, 0);
-            moverment.x = -1;
-        }
-        else rb.linearVelocity = new Vector2(0, 0);
     }
-    void Flip()
+
+    private void Flip()
     {
-        
-        if(moverment.x > 0)
-        {
-            this.transform.localScale = flipRight;
-        }
-        else if(moverment.x < 0)
-        {
-            this.transform.localScale = flipLeft;
-        }
+        if (movementInput.x > 0)
+            transform.localScale = flipRight;
+        else if (movementInput.x < 0)
+            transform.localScale = flipLeft;
     }
-    
+    private void OnCollisionEnter2D(Collision2D collision)
+    {       
+           isGround = true;       
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {       
+            isGround = false;
+    }
 }
