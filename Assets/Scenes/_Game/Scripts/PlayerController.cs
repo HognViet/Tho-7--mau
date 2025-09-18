@@ -8,9 +8,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float movementSpeed = 4.5f;
     [SerializeField] private float jumpForce = 5f;
 
+
     private Vector2 movementInput;
-   [SerializeField] private bool isJump = false;
-    [SerializeField]private bool isGround = false;
+    [SerializeField] private bool isJump = false;
+    [SerializeField] private bool isGround = false;
 
     private Rigidbody2D rb;
 
@@ -39,6 +40,10 @@ public class PlayerController : MonoBehaviour
         Flip();
 
         playerCamera.transform.position = transform.position + cameraOffset;
+        if (rb.linearVelocityY > 0.01f)
+        {
+            rb.gravityScale = 1.25f;
+        }
     }
 
     private void FixedUpdate()
@@ -47,9 +52,11 @@ public class PlayerController : MonoBehaviour
 
         if (isJump && isGround)
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            rb.linearVelocityY = jumpForce;
             isJump = false;
         }
+
+
     }
 
     private void Flip()
@@ -60,11 +67,49 @@ public class PlayerController : MonoBehaviour
             transform.localScale = flipLeft;
     }
     private void OnCollisionEnter2D(Collision2D collision)
-    {       
-           isGround = true;       
+    {
+        if ((collision.gameObject.CompareTag("Ground")))
+        {
+            isGround = true;
+        }
+
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Cham vo quai");
+            Destroy(collision.gameObject);
+        }
+        if (collision.gameObject.CompareTag("Spike"))
+        {
+            Debug.Log("Cham vo dau gai");
+            Destroy(collision.gameObject);
+        }
+        if (collision.gameObject.CompareTag("Finish"))
+        {
+            Debug.Log("Ban da win");
+
+        }
     }
-    private void OnCollisionExit2D(Collision2D collision)
-    {       
+        private void OnCollisionExit2D(Collision2D collision)
+    {
+        if ((collision.gameObject.CompareTag("Ground")))
+        {
             isGround = false;
+        }
+    } 
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Coin"))
+        {
+            Debug.Log("Cham vo coin");
+            Destroy(collision.gameObject);
+        }
+        if (collision.gameObject.CompareTag("Finish"))
+        {
+            Debug.Log("Ban da win");
+
+        }
     }
 }
+
+
